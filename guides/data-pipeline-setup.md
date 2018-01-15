@@ -29,14 +29,25 @@ Most often you will however find .dockerignore files that only specify files tha
 
 **install docker**
 First check your OS version. 
-For Windows users the 10 Home editions use Docker Toolbox, a Legacy desktop solution intended for older for older Mac and Windows systems that do not meet the requirements of Docker for Mac and Docker for Windows. It is recommended upgrading to newer applications, if possible and for Windows users to upgrade to PRO. Windows: https://docs.docker.com/toolbox/toolbox_install_windows/ . This toolbox run on Oracle VirtualBox VM and is therefore a lot slower than the following install solution. 
+For Windows users the 10 Home editions use Docker Toolbox, a Legacy desktop solution intended for older Mac and Windows systems that do not meet the requirements of Docker for Mac and Docker for Windows. It is recommended upgrading to newer applications, if possible and for Windows users to upgrade to PRO. Windows: https://docs.docker.com/toolbox/toolbox_install_windows/ . This toolbox run on Oracle VirtualBox VM and is therefore a lot slower than the following install solution. 
 
 Windows 10 PRO: download Docker for Windows PC Community Edition from the Docker Store.  https://www.docker.com/docker-windows 
 download and install <a href="https://www.docker.com">docker</a></br>
 
 To get started with Docker, see [starting guide](https://docs.docker.com/get-started/)
 
-**build postgreSQL data base image**
+**define a container with a dockerfile**
+dockerfiles defines what goes into the container. start by creating an empty directory, change directories into the new directory (CD), and create a file called Dockerfile. 
+
+The Dockerfile you need to build the postgres base instance can be found at https://github.com/Amsterdam/docker/blob/master/postgres/Dockerfile  
+
+In the docker CL type: ```docker build -t projectname``` 
+
+to run the image and build a container run: ```docker run -p 4000:80 projectname```
+Check http://localhost:4000 for the rendering. If you are running Docker Toolbox on windows, use the docker Machine IP adress instead. You can find this one by docker-machine ip (http://192.168.99.100:4000/) f.i.
+
+1) **build postgreSQL data base image**
+Access to resources like networking interfaces and disk drives is virtualized inside this environment, isolated from the rest of your system, so you have to map ports to the outside world, and be specific about what files you want to “copy in” to that environment.
 
 ```
 git clone https://github.com/Amsterdam/schoonmonitor.git schoonmonitor
@@ -47,12 +58,10 @@ docker-compose up database
 
 This builds a postgres Image from the public repository of Docker Hub (https://hub.docker.com/r/amsterdam/postgres/)
 based on a build context stored in the offical repository https://github.com/Amsterdam/docker. A build context is a Dockerfile and any files at a specific location. For an automated build, the build context is a repository containing a Dockerfile.
+The docker postgres database can be found on localhost:5403
 
-Create a local environment and activate it:
-```
-virtualenv --python=$(which python3) venv
-source venv/bin/activate
-```
+To start using servcies, you must initialize a swarm. See docs: https://docs.docker.com/engine/reference/commandline/swarm_init/#usage
+```docker swarm init --advertise=addr 172.17.0.1``` : the docker engine targeted by this command becomes a manager in the newly created single-node swarm.
 
 **build importer**
 
@@ -71,6 +80,9 @@ export EXTERNAL_DATASERVICES_PASSWORD = yourpassword
 ```
 
 In the docker client run:
+
+**docker-compose yaml file** 
+The Compose file is a YAML file defining services, networks and volumes. The default path for a Compose file is ./docker-compose.yml.
 
 ## Where do we store code**
 
